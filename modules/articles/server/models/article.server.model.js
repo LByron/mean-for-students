@@ -28,6 +28,10 @@ var ArticleSchema = new Schema({
   user: {
     type: Schema.ObjectId,
     ref: 'User'
+  },
+  publishAfter: {
+    type: Date,
+    default: Date.now()
   }
 });
 

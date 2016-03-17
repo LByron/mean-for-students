@@ -16,13 +16,21 @@
           <label class="control-label" for="content">Content</label>
           <textarea name="content" data-ng-model="vm.article.content" id="content" class="form-control" cols="30" rows="10" placeholder="Content"></textarea>
         </div>
+        <div class="form-group" show-errors>
+          <label class="control-label" for="publishAfter">Publish After</label>
+          <input name="publishAfter" type="date" ng-model="vm.article.publishAfter" id="publishAfter" class="form-control" placeholder="0" required>
+          <div ng-messages="vm.form.articleForm.publishAfter.$error" role="alert">
+            <p class="help-block error-text" ng-message="required">PublishAfter title is required.</p>
+          </div>
+        </div>
         <div class="form-group">
           <button type="submit" class="btn btn-default">{{vm.article._id ? 'Update' : 'Create'}}</button>
         </div>
         <div ng-show="vm.error" class="text-danger">
           <strong ng-bind="vm.error"></strong>
-        </div>
       </fieldset>
     </form>
   </div>
 </section>
+
+</div>

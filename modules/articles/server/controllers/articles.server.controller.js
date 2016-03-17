@@ -12,7 +12,29 @@ var path = require('path'),
  * Create an article
  */
 exports.create = function (req, res) {
+  console.log(req.body.publishAfter);
   var article = new Article(req.body);
+  article.user = req.user;
+
+
+  article.save(function (err) {
+    if (err) {
+      return res.status(400).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    } else {
+      res.json(article);
+    }
+  });
+};
+
+/**
+ * Clone
+ */
+exports.clone = function (req, res) {
+  var articleBody = {'content':req.article.content, 'title':req.article.title};
+
+  var article = new Article(articleBody);
   article.user = req.user;
 
   article.save(function (err) {
@@ -24,6 +46,8 @@ exports.create = function (req, res) {
       res.json(article);
     }
   });
+
+  //console.log(req.article);
 };
 
 /**
@@ -77,19 +101,46 @@ exports.delete = function (req, res) {
   });
 };
 
-/**
- * List of Articles
- */
-exports.list = function (req, res) {
-  Article.find().sort('-created').populate('user', 'displayName').exec(function (err, articles) {
+
+exports.deleteAll = function (req, res) {
+
+  Article.remove({},function (err) {
     if (err) {
       return res.status(400).send({
         message: errorHandler.getErrorMessage(err)
       });
     } else {
-      res.json(articles);
+      return res.status(204).send({});
     }
   });
+};
+
+
+/**
+ * List of Articles
+ */
+exports.list = function (req, res) {
+  //console.log(req.query);
+  var publishAfter = req.query.publishAfter;
+
+  var articles;
+  if(publishAfter) {
+    articles = Article.find({publishAfter: {$gt: publishAfter}});
+  } else {
+    articles = Article.find();
+  }
+    articles.sort('-created')
+            .populate('user', 'displayName')
+        .exec(function (err, articles) {
+      if (err) {
+        return res.status(400).send({
+          message: errorHandler.getErrorMessage(err)
+        });
+      } else {
+        res.json(articles);
+      }
+    });
+
 };
 
 /**
@@ -115,3 +166,4 @@ exports.articleByID = function (req, res, next, id) {
     next();
   });
 };
+
